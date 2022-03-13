@@ -57,6 +57,9 @@ class FilePaginator
         return $this->count_per_page;
     }
 
+    /**
+     * @param null $count
+     */
     public function setCountPerPage($count = null): void
     {
         if (isset($_GET['limit']) && in_array($_GET['limit'], [10, 25, 50, 100]))

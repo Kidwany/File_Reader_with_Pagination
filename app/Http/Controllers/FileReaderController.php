@@ -9,22 +9,39 @@ use App\Traits\HttpResponseStatus;
 use App\Traits\Upload;
 use Illuminate\Http\Request;
 
+/**
+ * Class FileReaderController
+ * @package App\Http\Controllers
+ */
 class FileReaderController extends Controller
 {
     use HttpResponseStatus, Upload;
 
+    /**
+     * @var
+     */
     public $filePaginator;
 
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function index()
     {
         return view('lines');
     }
 
+    /**
+     * @return \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
     public function getLogDirectory()
     {
         return config("app.log_directory_path");
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
     public function readFile(Request $request)
     {
         $request->validate([
