@@ -160,7 +160,7 @@ class FilePaginator
      */
     public function getNextPage()
     {
-        return $this->getCurrentPage() + 1 > $this->getLastPage() ? 0 : $this->getCurrentPage() + 1;
+        return $this->getCurrentPage() + 1 > $this->getLastPage() ? $this->getLastPage() : $this->getCurrentPage() + 1;
     }
 
     /**
@@ -168,7 +168,7 @@ class FilePaginator
      */
     public function getPreviousPage()
     {
-        return $this->getCurrentPage() - 1 < 0 ? 0 : $this->getCurrentPage() - 1;
+        return $this->getCurrentPage() - 1 <= 0 ? 1 : $this->getCurrentPage() - 1;
     }
 
 }

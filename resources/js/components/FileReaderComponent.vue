@@ -51,7 +51,7 @@
                     </div>
                 </div>
 
-                <div class="row mt-3">
+                <div class="row mt-3" v-if="pagination.total > 0">
                     <div class="col-2">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
@@ -172,7 +172,7 @@
             setLimitPerPage: function (limitPerPage)
             {
                 let current_page = this.pagination.current_page
-                this.queryParams = "?page=" + (current_page <= 0 ? current_page = 1 : current_page) + "&limit=" + limitPerPage;
+                this.queryParams = "?page=" + (current_page <= 0 ? 1 : current_page) + "&limit=" + limitPerPage;
                 this.getLinesToShow();
             },
         }
