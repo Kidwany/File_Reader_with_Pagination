@@ -149,6 +149,7 @@
                     this.pagination.last_page       = response.data.last_page;
                     this.searching = false
                     this.errors = {};
+                    this.isValidFile = '';
                     this.queryParams = ""
                 }).catch(error => {
                     this.searching = true

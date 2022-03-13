@@ -19336,6 +19336,7 @@ __webpack_require__.r(__webpack_exports__);
         _this2.pagination.last_page = response.data.last_page;
         _this2.searching = false;
         _this2.errors = {};
+        _this2.isValidFile = '';
         _this2.queryParams = "";
       })["catch"](function (error) {
         _this2.searching = true;
