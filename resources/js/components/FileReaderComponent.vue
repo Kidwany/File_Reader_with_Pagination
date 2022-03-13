@@ -28,7 +28,7 @@
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                Per page lines
+                                {{pagination.per_page }} Lines Per page
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                 <li><a class="dropdown-item" href="?limit=10">10</a></li>
@@ -51,16 +51,16 @@
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
                                 <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Previous">
-                                        <span aria-hidden="true"><img :src="'../public/img/first.png'"></span>
+                                    <a class="page-link" @click href="#" aria-label="Previous">
+                                        <span aria-hidden="true"><img :src="'/img/first.png'"></span>
                                     </a>
                                 </li>
-                                <li class="page-item"><a class="page-link" href="#"><img :src="'../public/img/previous.png'"></a></li>
-                                <li class="page-item"><a class="page-link" href="#"><img :src="'../public/img/next.png'"></a></li>
+                                <li class="page-item"><a class="page-link" href="#"><img :src="'/img/previous.png'"></a></li>
+                                <li class="page-item"><a class="page-link" href="#"><img :src="'/img/next.png'"></a></li>
                                 <li class="page-item">
                                     <a class="page-link" href="#" aria-label="Next">
                                         <span aria-hidden="true">
-                                            <img :src="'../public/img/latest.png'">
+                                            <img :src="'/img/latest.png'">
                                         </span>
                                     </a>
                                 </li>
@@ -68,7 +68,7 @@
                         </nav>
                     </div>
                     <div class="col-6 sm:text-right">
-                        From 1 to 10 of 125 Entries
+                        From {{ pagination.fromIndex }} to {{ pagination.toIndex }} of {{ pagination.total }} Entries
                     </div>
                 </div>
             </div>
@@ -88,22 +88,56 @@
                 errors : {
 
                 },
-                isValidFile : ''
+                isValidFile : '',
+                pagination : {
+                    total           : '0',
+                    pages_count     : '0',
+                    per_page        : 10,
+                    first_page      : 0,
+                    previous_page   : 0,
+                    current_page    : 1,
+                    next_page       : 0,
+                    last_page       : 0,
+                    fromIndex       : 0,
+                    toIndex         : 0,
+                },
+                baseUrl : "/get-log-directory",
+                queryParams : ""
             }
         },
         mounted() {
             this.getLogDirectory();
             console.log(this.userInfo)
         },
+        computed : {
+            axiosParams() {
+                const params = new URLSearchParams();
+                params.append('page', this.pagination.current_page);
+                params.append('limit', this.pagination.per_page);
+                return params;
+            }
+        },
         methods : {
             getLogDirectory: function () {
-                axios.get("/get-log-directory").then(response => {
+                axios.get("/get-log-directory", {
+                    params : this.axiosParams
+                }).then(response => {
                     this.logDirectory = response.data
                 })
             },
             getLinesToShow: function () {
-                axios.post("/file-reader", this.fields).then(response => {
-                    this.linesToShow = response.data.lines
+                axios.post(this.baseUrl + this.queryParams, this.fields).then(response => {
+                    this.linesToShow                = response.data.lines;
+                    this.pagination.total           = response.data.total;
+                    this.pagination.fromIndex       = response.data.from;
+                    this.pagination.toIndex         = response.data.to;
+                    this.pagination.pages_count     = response.data.pages_count;
+                    this.pagination.per_page        = response.data.per_page;
+                    this.pagination.first_page      = response.data.first_page;
+                    this.pagination.previous_page   = response.data.previous_page;
+                    this.pagination.current_page    = response.data.current_page;
+                    this.pagination.next_page       = response.data.next_page;
+                    this.pagination.last_page       = response.data.last_page;
                 }).catch(error => {
                     this.errors = {};
                     this.isValidFile = ''
@@ -116,6 +150,17 @@
                         this.isValidFile = false
                     }
                 })
+            },
+            setPageNumber: function (page_number){
+                this.queryParams += "?page=" + page_number;
+            },
+            setLimitPerPage: function (limitPerPage)
+            {
+                this.queryParams = "?page=" + this.pagination.current_page + "&limit=" + limitPerPage;
+            },
+            updateQueryParams: function ()
+            {
+                this.queryParams = ""
             }
         }
     }
