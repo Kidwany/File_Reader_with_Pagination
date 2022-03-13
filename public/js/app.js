@@ -19282,17 +19282,20 @@ __webpack_require__.r(__webpack_exports__);
       errors: {},
       isValidFile: '',
       pagination: {
-        total: '0',
-        pages_count: '0',
-        per_page: 0,
-        first_page: 0,
+        total: 0,
+        pages_count: 0,
+        per_page: 10,
+        first_page: 1,
         previous_page: 0,
-        current_page: 1,
+        current_page: 0,
         next_page: 0,
-        last_page: 0,
+        last_page: 1,
         fromIndex: 0,
         toIndex: 0
-      }
+      },
+      baseUrl: "/file-reader",
+      queryParams: "",
+      searching: false
     };
   },
   mounted: function mounted() {
@@ -19311,16 +19314,15 @@ __webpack_require__.r(__webpack_exports__);
     getLogDirectory: function getLogDirectory() {
       var _this = this;
 
-      axios.get("/get-log-directory", {
-        params: this.axiosParams
-      }).then(function (response) {
+      axios.get("/get-log-directory").then(function (response) {
         _this.logDirectory = response.data;
       });
     },
     getLinesToShow: function getLinesToShow() {
       var _this2 = this;
 
-      axios.post("/file-reader", this.fields).then(function (response) {
+      axios.post(this.baseUrl + this.queryParams, this.fields).then(function (response) {
+        _this2.searching = true;
         _this2.linesToShow = response.data.lines;
         _this2.pagination.total = response.data.total;
         _this2.pagination.fromIndex = response.data.from;
@@ -19332,7 +19334,11 @@ __webpack_require__.r(__webpack_exports__);
         _this2.pagination.current_page = response.data.current_page;
         _this2.pagination.next_page = response.data.next_page;
         _this2.pagination.last_page = response.data.last_page;
+        _this2.searching = false;
+        _this2.errors = {};
+        _this2.queryParams = "";
       })["catch"](function (error) {
+        _this2.searching = true;
         _this2.errors = {};
         _this2.isValidFile = '';
 
@@ -19341,7 +19347,18 @@ __webpack_require__.r(__webpack_exports__);
         } else if (error.response.status === 402) {
           _this2.isValidFile = false;
         }
+
+        _this2.searching = false;
       });
+    },
+    setPageNumber: function setPageNumber(page_number) {
+      this.queryParams = "?page=" + page_number + "&limit=" + this.pagination.per_page;
+      this.getLinesToShow();
+    },
+    setLimitPerPage: function setLimitPerPage(limitPerPage) {
+      var current_page = this.pagination.current_page;
+      this.queryParams = "?page=" + (current_page <= 0 ? current_page = 1 : current_page) + "&limit=" + limitPerPage;
+      this.getLinesToShow();
     }
   }
 });
@@ -19411,72 +19428,89 @@ var _hoisted_14 = {
 var _hoisted_15 = {
   "class": "col-lg-4 d-flex justify-content-between"
 };
+var _hoisted_16 = ["disabled"];
 
-var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"dropdown\"><button class=\"btn btn-outline-dark dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton1\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"> Per page lines </button><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton1\"><li><a class=\"dropdown-item\" href=\"?limit=10\">10</a></li><li><a class=\"dropdown-item\" href=\"?limit=25\">25</a></li><li><a class=\"dropdown-item\" href=\"?limit=50\">50</a></li><li><a class=\"dropdown-item\" href=\"?limit=100\">100</a></li></ul></div>", 1);
+var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Read File ");
 
-var _hoisted_17 = {
-  "class": "col-12 mt-4"
-};
 var _hoisted_18 = {
-  "class": "list-group"
+  key: 0,
+  "class": "spinner-border text-light",
+  role: "status",
+  style: {
+    "width": "20px",
+    "height": "20px"
+  }
 };
-var _hoisted_19 = {
-  "class": "list-group-item disabled"
-};
-var _hoisted_20 = {
-  "class": "row mt-3"
-};
+
+var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "visually-hidden"
+}, "Loading...", -1
+/* HOISTED */
+);
+
+var _hoisted_20 = [_hoisted_19];
 var _hoisted_21 = {
-  "class": "col-6"
+  "class": "dropdown"
 };
 var _hoisted_22 = {
-  "aria-label": "Page navigation example"
+  "class": "btn btn-outline-dark dropdown-toggle",
+  type: "button",
+  id: "dropdownMenuButton1",
+  "data-bs-toggle": "dropdown",
+  "aria-expanded": "false"
 };
 var _hoisted_23 = {
-  "class": "pagination"
+  "class": "dropdown-menu",
+  "aria-labelledby": "dropdownMenuButton1"
 };
 var _hoisted_24 = {
-  "class": "page-item"
+  "class": "col-12 mt-4"
 };
 var _hoisted_25 = {
-  "class": "page-link",
-  href: "#",
-  "aria-label": "Previous"
+  "class": "list-group"
 };
 var _hoisted_26 = {
-  "aria-hidden": "true"
+  "class": "list-group-item disabled"
 };
-var _hoisted_27 = ["src"];
+var _hoisted_27 = {
+  "class": "row mt-3"
+};
 var _hoisted_28 = {
-  "class": "page-item"
+  "class": "col-2"
 };
 var _hoisted_29 = {
-  "class": "page-link",
-  href: "#"
+  "aria-label": "Page navigation example"
 };
-var _hoisted_30 = ["src"];
+var _hoisted_30 = {
+  "class": "pagination"
+};
 var _hoisted_31 = {
   "class": "page-item"
 };
 var _hoisted_32 = {
-  "class": "page-link",
-  href: "#"
+  "aria-hidden": "true"
 };
 var _hoisted_33 = ["src"];
 var _hoisted_34 = {
   "class": "page-item"
 };
-var _hoisted_35 = {
-  "class": "page-link",
-  href: "#",
-  "aria-label": "Next"
-};
+var _hoisted_35 = ["src"];
 var _hoisted_36 = {
-  "aria-hidden": "true"
+  "class": "page-item"
 };
 var _hoisted_37 = ["src"];
 var _hoisted_38 = {
-  "class": "col-6 sm:text-right"
+  "class": "page-item"
+};
+var _hoisted_39 = {
+  "aria-hidden": "true"
+};
+var _hoisted_40 = ["src"];
+var _hoisted_41 = {
+  "class": "col-6 sm:text-left"
+};
+var _hoisted_42 = {
+  "class": "col-4 sm:text-right"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
@@ -19500,30 +19534,83 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "btn btn-dark",
     onClick: _cache[1] || (_cache[1] = function ($event) {
       return $options.getLinesToShow();
-    })
-  }, "Read File")]), _hoisted_16]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.linesToShow, function (lineToShow) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("ul", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(lineToShow), 1
+    }),
+    disabled: $data.searching
+  }, [_hoisted_17, $data.searching ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_18, _hoisted_20)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 8
+  /* PROPS */
+  , _hoisted_16)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total > 0 ? $data.pagination.per_page : '') + " Lines Per page ", 1
+  /* TEXT */
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "dropdown-item",
+    onClick: _cache[2] || (_cache[2] = function ($event) {
+      return $options.setLimitPerPage(10);
+    }),
+    href: "#"
+  }, "10")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "dropdown-item",
+    onClick: _cache[3] || (_cache[3] = function ($event) {
+      return $options.setLimitPerPage(25);
+    }),
+    href: "#"
+  }, "25")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "dropdown-item",
+    onClick: _cache[4] || (_cache[4] = function ($event) {
+      return $options.setLimitPerPage(50);
+    }),
+    href: "#"
+  }, "50")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "dropdown-item",
+    onClick: _cache[5] || (_cache[5] = function ($event) {
+      return $options.setLimitPerPage(100);
+    }),
+    href: "#"
+  }, "100")])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.linesToShow, function (lineToShow) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("ul", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(lineToShow), 1
     /* TEXT */
     )]);
   }), 256
   /* UNKEYED_FRAGMENT */
-  ))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("nav", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+  ))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("nav", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "page-link",
+    onClick: _cache[6] || (_cache[6] = function ($event) {
+      return $options.setPageNumber($data.pagination.first_page);
+    }),
+    "aria-label": "Previous"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
     src: '/img/first.png'
   }, null, 8
   /* PROPS */
-  , _hoisted_27)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+  , _hoisted_33)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "page-link",
+    onClick: _cache[7] || (_cache[7] = function ($event) {
+      return $options.setPageNumber($data.pagination.previous_page);
+    })
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
     src: '/img/previous.png'
   }, null, 8
   /* PROPS */
-  , _hoisted_30)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+  , _hoisted_35)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "page-link",
+    onClick: _cache[8] || (_cache[8] = function ($event) {
+      return $options.setPageNumber($data.pagination.next_page);
+    })
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
     src: '/img/next.png'
   }, null, 8
   /* PROPS */
-  , _hoisted_33)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+  , _hoisted_37)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    "class": "page-link",
+    onClick: _cache[9] || (_cache[9] = function ($event) {
+      return $options.setPageNumber($data.pagination.last_page);
+    }),
+    "aria-label": "Next"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
     src: '/img/latest.png'
   }, null, 8
   /* PROPS */
-  , _hoisted_37)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_38, " From " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.fromIndex) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.toIndex) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total) + " Entries ", 1
+  , _hoisted_40)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_41, " Page number " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.current_page) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.pages_count) + " Pages ", 1
+  /* TEXT */
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, " From " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.fromIndex) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.toIndex) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total) + " Entries ", 1
   /* TEXT */
   )])])])]);
 }
@@ -37040,13 +37127,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _FileReaderComponent_vue_vue_type_template_id_7f89a943__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FileReaderComponent.vue?vue&type=template&id=7f89a943 */ "./resources/js/components/FileReaderComponent.vue?vue&type=template&id=7f89a943");
 /* harmony import */ var _FileReaderComponent_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileReaderComponent.vue?vue&type=script&lang=js */ "./resources/js/components/FileReaderComponent.vue?vue&type=script&lang=js");
-/* harmony import */ var C_xampp_htdocs_file_reader_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_xampp_htdocs_queen_task_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-const __exports__ = /*#__PURE__*/(0,C_xampp_htdocs_file_reader_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_FileReaderComponent_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FileReaderComponent_vue_vue_type_template_id_7f89a943__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/components/FileReaderComponent.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_xampp_htdocs_queen_task_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_FileReaderComponent_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FileReaderComponent_vue_vue_type_template_id_7f89a943__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/components/FileReaderComponent.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -37324,7 +37411,7 @@ function compileToFunction(template, options) {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"Promise based HTTP client for the browser and node.js","main":"index.js","scripts":{"test":"grunt test","start":"node ./sandbox/server.js","build":"NODE_ENV=production grunt build","preversion":"npm test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json","postversion":"git push && git push --tags","examples":"node ./examples/server.js","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","fix":"eslint --fix lib/**/*.js"},"repository":{"type":"git","url":"https://github.com/axios/axios.git"},"keywords":["xhr","http","ajax","promise","node"],"author":"Matt Zabriskie","license":"MIT","bugs":{"url":"https://github.com/axios/axios/issues"},"homepage":"https://axios-http.com","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"jsdelivr":"dist/axios.min.js","unpkg":"dist/axios.min.js","typings":"./index.d.ts","dependencies":{"follow-redirects":"^1.14.0"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}]}');
+module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"range","registry":true,"raw":"axios@^0.21","name":"axios","escapedName":"axios","rawSpec":"^0.21","saveSpec":null,"fetchSpec":"^0.21"},"_requiredBy":["#DEV:/"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_shasum":"c67b90dc0568e5c1cf2b0b858c43ba28e2eda575","_spec":"axios@^0.21","_where":"C:\\\\xampp\\\\htdocs\\\\queen-task","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundleDependencies":false,"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"deprecated":false,"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
 
 /***/ })
 

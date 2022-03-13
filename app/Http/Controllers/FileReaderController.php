@@ -31,8 +31,7 @@ class FileReaderController extends Controller
             "file_path" => "required|max:100"
         ]);
 
-        $path = $request->file_path;
-        $file_reader = new FileReaderHelper($path);
+        $file_reader = new FileReaderHelper($request->file_path);
         $file = $file_reader->readFile();
         if ($file == "file_not_found")
             return $this->failureResponse(402, "Invalid File");
@@ -53,10 +52,5 @@ class FileReaderController extends Controller
         $data['lines']          = $file_reader->getLinesToShow($file_paginator->getStartIndex(), $file_paginator->getCountPerPage());
 
         return response()->json($data);
-    }
-
-    public function directoryAutoComplete(Request $request)
-    {
-        $search = $request->directory;
     }
 }

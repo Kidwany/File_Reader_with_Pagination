@@ -14,14 +14,11 @@ use App\Http\Controllers\FileReaderController;
 |
 */
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get("/", function () {
+   return view("lines");
+});
 
-require __DIR__.'/auth.php';
-
-Route::get('/file-reader', [FileReaderController::class, 'index']);
-
+/*----------- Get log directory ---------*/
 Route::get('get-log-directory', [FileReaderController::class, 'getLogDirectory']);
-
+/*----------- Search on file ---------*/
 Route::post('/file-reader', [FileReaderController::class, 'readFile']);

@@ -24,17 +24,22 @@
                     </div>
                     <div class="col-lg-4 d-flex justify-content-between">
                         <div>
-                            <button type="button" id="checkDirectory" class="btn btn-dark" @click=" getLinesToShow() ">Read File</button>
+                            <button type="button" id="checkDirectory" class="btn btn-dark" @click=" getLinesToShow() " :disabled="searching">
+                                Read File
+                                <div class="spinner-border text-light" role="status" style="width: 20px; height: 20px" v-if="searching">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </button>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{pagination.per_page }} Lines Per page
+                                {{pagination.total > 0 ? pagination.per_page : ''}} Lines Per page
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="?limit=10">10</a></li>
-                                <li><a class="dropdown-item" href="?limit=25">25</a></li>
-                                <li><a class="dropdown-item" href="?limit=50">50</a></li>
-                                <li><a class="dropdown-item" href="?limit=100">100</a></li>
+                                <li><a class="dropdown-item" @click="setLimitPerPage(10)" href="#">10</a></li>
+                                <li><a class="dropdown-item" @click="setLimitPerPage(25)" href="#">25</a></li>
+                                <li><a class="dropdown-item" @click="setLimitPerPage(50)" href="#">50</a></li>
+                                <li><a class="dropdown-item" @click="setLimitPerPage(100)" href="#">100</a></li>
                             </ul>
                         </div>
                     </div>
@@ -47,18 +52,20 @@
                 </div>
 
                 <div class="row mt-3">
-                    <div class="col-6">
+                    <div class="col-2">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
                                 <li class="page-item">
-                                    <a class="page-link" @click href="#" aria-label="Previous">
-                                        <span aria-hidden="true"><img :src="'/img/first.png'"></span>
+                                    <a class="page-link" @click="setPageNumber(pagination.first_page) " aria-label="Previous">
+                                        <span aria-hidden="true">
+                                            <img :src="'/img/first.png'">
+                                        </span>
                                     </a>
                                 </li>
-                                <li class="page-item"><a class="page-link" href="#"><img :src="'/img/previous.png'"></a></li>
-                                <li class="page-item"><a class="page-link" href="#"><img :src="'/img/next.png'"></a></li>
+                                <li class="page-item"><a class="page-link" @click="setPageNumber(pagination.previous_page)" ><img :src="'/img/previous.png'"></a></li>
+                                <li class="page-item"><a class="page-link" @click="setPageNumber(pagination.next_page)" ><img :src="'/img/next.png'"></a></li>
                                 <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Next">
+                                    <a class="page-link" @click="setPageNumber(pagination.last_page)" aria-label="Next">
                                         <span aria-hidden="true">
                                             <img :src="'/img/latest.png'">
                                         </span>
@@ -67,7 +74,10 @@
                             </ul>
                         </nav>
                     </div>
-                    <div class="col-6 sm:text-right">
+                    <div class="col-6 sm:text-left">
+                        Page number {{ pagination.current_page }} of {{ pagination.pages_count }} Pages
+                    </div>
+                    <div class="col-4 sm:text-right">
                         From {{ pagination.fromIndex }} to {{ pagination.toIndex }} of {{ pagination.total }} Entries
                     </div>
                 </div>
@@ -86,23 +96,23 @@
                     file_path : ''
                 },
                 errors : {
-
                 },
                 isValidFile : '',
                 pagination : {
-                    total           : '0',
-                    pages_count     : '0',
+                    total           : 0,
+                    pages_count     : 0,
                     per_page        : 10,
-                    first_page      : 0,
+                    first_page      : 1,
                     previous_page   : 0,
-                    current_page    : 1,
+                    current_page    : 0,
                     next_page       : 0,
-                    last_page       : 0,
+                    last_page       : 1,
                     fromIndex       : 0,
                     toIndex         : 0,
                 },
-                baseUrl : "/get-log-directory",
-                queryParams : ""
+                baseUrl : "/file-reader",
+                queryParams : "",
+                searching : false
             }
         },
         mounted() {
@@ -119,14 +129,13 @@
         },
         methods : {
             getLogDirectory: function () {
-                axios.get("/get-log-directory", {
-                    params : this.axiosParams
-                }).then(response => {
+                axios.get("/get-log-directory").then(response => {
                     this.logDirectory = response.data
                 })
             },
             getLinesToShow: function () {
                 axios.post(this.baseUrl + this.queryParams, this.fields).then(response => {
+                    this.searching                  = true
                     this.linesToShow                = response.data.lines;
                     this.pagination.total           = response.data.total;
                     this.pagination.fromIndex       = response.data.from;
@@ -138,7 +147,11 @@
                     this.pagination.current_page    = response.data.current_page;
                     this.pagination.next_page       = response.data.next_page;
                     this.pagination.last_page       = response.data.last_page;
+                    this.searching = false
+                    this.errors = {};
+                    this.queryParams = ""
                 }).catch(error => {
+                    this.searching = true
                     this.errors = {};
                     this.isValidFile = ''
                     if (error.response.status === 422)
@@ -149,19 +162,19 @@
                     {
                         this.isValidFile = false
                     }
+                    this.searching = false
                 })
             },
             setPageNumber: function (page_number){
-                this.queryParams += "?page=" + page_number;
+                this.queryParams = "?page=" + page_number + "&limit=" + this.pagination.per_page;
+                this.getLinesToShow();
             },
             setLimitPerPage: function (limitPerPage)
             {
-                this.queryParams = "?page=" + this.pagination.current_page + "&limit=" + limitPerPage;
+                let current_page = this.pagination.current_page
+                this.queryParams = "?page=" + (current_page <= 0 ? current_page = 1 : current_page) + "&limit=" + limitPerPage;
+                this.getLinesToShow();
             },
-            updateQueryParams: function ()
-            {
-                this.queryParams = ""
-            }
         }
     }
 </script>
